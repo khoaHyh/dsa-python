@@ -1,4 +1,5 @@
 from typing import List, Optional
+import json
 
 
 class TreeNode:
@@ -6,6 +7,17 @@ class TreeNode:
         self.left: Optional[TreeNode] = None
         self.right: Optional[TreeNode] = None
         self.value = value
+
+    def _to_dict(self) -> dict:
+        return {
+            "left": None if self.left is None else self.left.value,
+            "right": None if self.right is None else self.right.value,
+            "value": self.value
+        }
+
+    def __str__(self):
+        return json.dumps(self._to_dict(), indent=4)
+
 
 class BinarySearchTree:        
     def __init__(self):
@@ -41,9 +53,8 @@ class BinarySearchTree:
         if self.root is None:
             return not_found_message
         else:
-
             node: Optional[TreeNode] = self._get_recursive(self.root, value) 
-            return not_found_message if node is None  else node
+            return not_found_message if node is None else node
 
     def _get_recursive(self, node: TreeNode, value: int) -> Optional[TreeNode]:
         if value == node.value:
@@ -54,14 +65,14 @@ class BinarySearchTree:
             if node.left is None:
                 return None
             else:
-                self._get_recursive(node.left, value)
+                return self._get_recursive(node.left, value)
         else:
             # If the given value is greater than the current node's value, return None if the right branch is None.
             # Otherwise, keep traversing left.
             if node.right is None:
                 return None
             else:
-                self._get_recursive(node.right, value)
+                return self._get_recursive(node.right, value)
 
     def inorder_traversal(self) -> Optional[List[str]]:
         if self.root is None:
@@ -112,8 +123,11 @@ def main():
     bst.insert(7)
     bst.insert(13)
 
-    print("bst:", bst.size) 
+    print("bst size:", bst.size) 
     print("bst inorder traversal:", bst.inorder_traversal()) 
+    print("get (5):", bst.get(5)) 
+    print("get (13):", bst.get(13)) 
+    print("get (6):", bst.get(6)) 
 
 if __name__ == "__main__":
     main()

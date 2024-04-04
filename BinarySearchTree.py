@@ -82,6 +82,24 @@ class BinarySearchTree:
 
         return queue
 
+    # both branches are empty => simple deletion
+    # left branch is empty  => right node replaces
+    # right branch is empty  => left node replaces
+    # both branches have nodes => largest node in left tree OR smallest nodein right tree replaces
+    def delete(self, value: int):
+        if self.root is None:
+            return None
+        else:
+            # find the node and its parent
+                # we will something like prev_node to track
+            # determine the node's branch situation
+            # traverse to find the appropriate node to replace
+                # replace the node
+            found_node = self._get_recursive(self.root, value)
+
+            if found_node is None:
+                return None
+
 def main():
     bst = BinarySearchTree()
     bst.insert(8)

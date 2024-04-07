@@ -97,6 +97,13 @@ class BinarySearchTree:
 
         return queue
 
+    # TODO: remaining methods
+    # def preorder_traversal(self):
+    #
+    # def postorder_traversal(self):
+    #
+    # def balance():
+
     # both branches of node to delete are empty => simple deletion
     # left branch of node to delete is empty  => right node replaces
     # right branch of node to delete is empty  => left node replaces

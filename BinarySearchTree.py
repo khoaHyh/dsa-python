@@ -3,7 +3,8 @@ import json
 
 
 class TreeNode:
-    def __init__(self, value):
+    # TODO: consider adding a height property to nodes to reduce computation when trying to rebalance
+    def __init__(self, value: int):
         self.left: Optional[TreeNode] = None
         self.right: Optional[TreeNode] = None
         self.value = value
@@ -83,33 +84,116 @@ class BinarySearchTree:
     def _inorder_traversal_recursive(self, node: TreeNode) -> List[str]:
         queue: List[str] = []
 
+        # Accumulate values when recursive traversing the left subtree
         if node.left is not None:
             queue.extend(self._inorder_traversal_recursive(node.left))
 
-        queue.append(node.value)
+        # Only insert the node's value after the subtree has been traversed
+        queue.append(str(node.value))
 
+        # Accumulate values when recursively traversing the right subtree
         if node.right is not None:
             queue.extend(self._inorder_traversal_recursive(node.right))
 
         return queue
 
-    # both branches are empty => simple deletion
-    # left branch is empty  => right node replaces
-    # right branch is empty  => left node replaces
-    # both branches have nodes => largest node in left tree OR smallest nodein right tree replaces
+    # both branches of node to delete are empty => simple deletion
+    # left branch of node to delete is empty  => right node replaces
+    # right branch of node to delete is empty  => left node replaces
+    # both branches of node to delete have nodes => largest node in left tree OR smallest node in right tree replaces
     def delete(self, value: int):
         if self.root is None:
             return None
         else:
-            # find the node and its parent
-                # we will something like prev_node to track
-            # determine the node's branch situation
-            # traverse to find the appropriate node to replace
-                # replace the node
-            found_node = self._get_recursive(self.root, value)
+            parent_node = self._get_parent(self.root, value)
 
-            if found_node is None:
+            if parent_node is None:
+                return "Value to be deleted has no parent."
+
+            sub_tree = "left" if parent_node.left is not None and parent_node.left.value == value else "right"
+            node_to_delete = parent_node.left if parent_node.left is not None and parent_node.left.value == value else parent_node.right
+
+            if node_to_delete is None:
+                raise Exception("Node to be deleted's parent was found but the node itself wasn't found.")
+
+            if node_to_delete.left is None and node_to_delete.right is None:
+                if sub_tree == "left":
+                    parent_node.left = None
+                else: 
+                    parent_node.right = None
+
+                self.size -= 1 
+            elif node_to_delete.left is None and node_to_delete.right is not None:
+                replacing_node = node_to_delete.right                
+
+                if sub_tree == "left":
+                    parent_node.left = replacing_node
+                else: 
+                    parent_node.right = replacing_node
+
+                self.size -= 1 
+            elif node_to_delete.left is not None and node_to_delete.right is None:
+                replacing_node = node_to_delete.left
+
+                if sub_tree == "left":
+                    parent_node.left = replacing_node
+                else:
+                    parent_node.right = replacing_node
+
+                self.size -= 1 
+            else:
+                # TODO: for now we will default to the largest node in left subtree to replace but a more robust solution would be to use the 
+                # balance factor of the node being deleted to decide which node will take its place
+                if node_to_delete.left is None:
+                    raise Exception("This else branch should mean that the node to delete has both subtrees.")
+
+                # Go to left subtreeof the node to be deleted, find biggest node
+                replacing_node = self.get_max_node(node_to_delete.left)
+                parent_replacing_node = self._get_parent(node_to_delete.left, replacing_node.value)
+
+                if parent_replacing_node is None or parent_replacing_node.right is None:
+                    raise Exception("The max node in the left subtree must have a parent.")
+
+                # Set the replacing node's parent to not to point to it anymore
+                parent_replacing_node.right = None
+
+                # Set the node to be deleted's parent to point to the replacing node
+                if sub_tree == "left":
+                    parent_node.left = replacing_node
+                else: 
+                    parent_node.right = replacing_node
+
+                self.size -= 1 
+
+            return self.inorder_traversal()
+            
+
+    def _get_parent(self, node:TreeNode, value: int):
+        if (node.left is not None and node.left.value == value) or (node.right is not None and node.right.value == value):
+            return node
+        elif value < node.value:
+            if node.left is None:
                 return None
+            else:
+                return self._get_parent(node.left, value)
+        else:
+            if node.right is None:
+                return None
+            else:
+                return self._get_parent(node.right, value)
+
+    def get_min_node(self, node: TreeNode):
+        if node.left is None:
+            return node
+        else:
+            return self.get_min_node(node.left)
+
+    def get_max_node(self, node: TreeNode):
+        if node.right is None:
+            return node
+        else:
+            return self.get_max_node(node.right)
+
 
 def main():
     bst = BinarySearchTree()
@@ -128,6 +212,10 @@ def main():
     print("get (5):", bst.get(5)) 
     print("get (13):", bst.get(13)) 
     print("get (6):", bst.get(6)) 
+    print("bst inorder traversal:", bst.inorder_traversal()) 
+    print("bst size:", bst.size)
+    print("delete(4)", bst.delete(4))
+    print("bst size:", bst.size)
 
 if __name__ == "__main__":
     main()

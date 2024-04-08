@@ -1,6 +1,13 @@
+from collections import deque
+from enum import Enum, auto
 from typing import List, Optional
 import json
 
+class TraversalOrder(Enum):
+    PRE_ORDER = auto()
+    IN_ORDER = auto()
+    POST_ORDER = auto()
+    LEVEL_ORDER = auto()
 
 class TreeNode:
     # TODO: consider adding a height property to nodes to reduce computation when trying to rebalance
@@ -75,34 +82,91 @@ class BinarySearchTree:
             else:
                 return self._get_recursive(node.right, value)
 
-    def inorder_traversal(self) -> Optional[List[str]]:
+    def traverse(self, order) -> Optional[List[int]]:
         if self.root is None:
             return None
-        else:
-            return self._inorder_traversal_recursive(self.root)
 
-    def _inorder_traversal_recursive(self, node: TreeNode) -> List[str]:
-        queue: List[str] = []
+        if order is TraversalOrder.PRE_ORDER:
+            return self.pre_order_traversal(self.root)
+        if order is TraversalOrder.IN_ORDER:
+            return self.in_order_traversal(self.root)
+        if order is TraversalOrder.POST_ORDER:
+            return self.post_order_traversal(self.root)
+        if order is TraversalOrder.LEVEL_ORDER:
+            return self.level_order_traversal()
+
+        return None
+            
+
+    def in_order_traversal(self, node: TreeNode) -> List[int]:
+        queue: List[int] = []
 
         # Accumulate values when recursive traversing the left subtree
         if node.left is not None:
-            queue.extend(self._inorder_traversal_recursive(node.left))
+            queue.extend(self.in_order_traversal(node.left))
 
         # Only insert the node's value after the subtree has been traversed
-        queue.append(str(node.value))
+        queue.append(node.value)
 
         # Accumulate values when recursively traversing the right subtree
         if node.right is not None:
-            queue.extend(self._inorder_traversal_recursive(node.right))
+            queue.extend(self.in_order_traversal(node.right))
 
         return queue
 
-    # TODO: remaining methods
-    # def preorder_traversal(self):
-    #
-    # def postorder_traversal(self):
-    #
-    # def balance():
+    def pre_order_traversal(self, node: TreeNode) -> List[int]:
+        queue: List[int] = []
+
+        # Add node to queue before traversing any subtree
+        queue.append(node.value)
+
+        # Accumulate values when recursive traversing the left subtree
+        if node.left is not None:
+            queue.extend(self.pre_order_traversal(node.left))
+
+
+        # Accumulate values when recursively traversing the right subtree
+        if node.right is not None:
+            queue.extend(self.pre_order_traversal(node.right))
+
+        return queue
+
+    def post_order_traversal(self, node: TreeNode) -> List[int]:
+        queue: List[int] = []
+
+        # Accumulate values when recursive traversing the left subtree
+        if node.left is not None:
+            queue.extend(self.post_order_traversal(node.left))
+
+
+        # Accumulate values when recursively traversing the right subtree
+        if node.right is not None:
+            queue.extend(self.post_order_traversal(node.right))
+
+        # Add node to queue after traversing both subtrees
+        queue.append(node.value)
+
+        return queue
+
+    def level_order_traversal(self) -> List[int]:
+        if self.root is None:
+            return []
+
+        queue = deque()
+        queue.append(self.root)
+        print_queue = []
+
+        while (len(queue) > 0):
+            print_queue.append(queue[0].value)
+            node = queue.popleft()            
+
+            if node.left is not None:
+                queue.append(node.left)
+            if node.right is not None:
+                queue.append(node.right)
+
+        return print_queue
+    
 
     # both branches of node to delete are empty => simple deletion
     # left branch of node to delete is empty  => right node replaces
@@ -172,7 +236,7 @@ class BinarySearchTree:
 
                 self.size -= 1 
 
-            return self.inorder_traversal()
+            return self.traverse(TraversalOrder.IN_ORDER)
             
 
     def _get_parent(self, node:TreeNode, value: int):
@@ -215,14 +279,18 @@ def main():
     bst.insert(13)
 
     print("bst size:", bst.size) 
-    print("bst inorder traversal:", bst.inorder_traversal()) 
+    print("bst inorder traversal:", bst.traverse(TraversalOrder.IN_ORDER)) 
     print("get (5):", bst.get(5)) 
     print("get (13):", bst.get(13)) 
     print("get (6):", bst.get(6)) 
-    print("bst inorder traversal:", bst.inorder_traversal()) 
+    print("bst inorder traversal:", bst.traverse(TraversalOrder.IN_ORDER)) 
     print("bst size:", bst.size)
     print("delete(4)", bst.delete(4))
     print("bst size:", bst.size)
+
+    print("bst preorder traversal:", bst.traverse(TraversalOrder.PRE_ORDER)) 
+    print("bst postorder traversal:", bst.traverse(TraversalOrder.POST_ORDER)) 
+    print("bst levelorder traversal:", bst.traverse(TraversalOrder.LEVEL_ORDER)) 
 
 if __name__ == "__main__":
     main()

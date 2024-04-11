@@ -3,6 +3,20 @@ from enum import Enum, auto
 from typing import List, Optional
 import json
 
+"""
+Binary Search Tree - an ordered or sorted binary tree.
+
+Useful for: data retrieval, maintaining dynamically changing dataset, sorting, range queries
+
+Space: O(n), n is n the number of nodes in the tree. Storing value, left pointer, right pointer, in each node.
+
+Time:
+Search: O(h)/O(log n), O(n) in worse case (skewed tree)
+Insertion: O(h)/O(log n), O(n) in worse case (skewed tree) 
+Deletion: O(h)/O(log n), O(n) in worse case (skewed tree)
+Traversal: O(n)
+"""
+
 class TraversalOrder(Enum):
     PRE_ORDER = auto()
     IN_ORDER = auto()

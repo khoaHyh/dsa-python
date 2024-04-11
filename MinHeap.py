@@ -1,3 +1,19 @@
+"""
+Heap - specialized tree-based DS that satisfies the heap property. 
+In our Min Heap, every parent node has a value less than or equal to the values of its children.
+Heaps can be implemented as trees or arrays but to save overhead memory, arrays are preferred because we don't need to store the node and its pointers just the value.
+
+Useful for: priority queue implementation, efficient sorting, graph algos, k-th largest element.
+
+Space: O(n), n is n the number of nodes in the heap.
+
+Time:
+Find Min/Max: O(1)
+Insertion: O(log n), insert at the end and heapify up 
+Deletion: O(log n), delete root and heapify down
+Heapify:  O(n), arranging the elements to maintain the heap property
+"""
+
 class EmptyHeapError(Exception):
     def __init__(self, method: str, message="Min Heap is empty."):
         self.method = method 
@@ -57,6 +73,7 @@ class MinHeap:
 
         min_item = self.items[0]
         self.items[0] = self.items.pop()
+        self.size-=1
         self.heapifyDown()
         return min_item
 
@@ -77,7 +94,7 @@ class MinHeap:
 
         while self._hasParent(index) and self._parentValue(index) > self.items[index]:
             # swap elements and update the index so we can move up the heap and compare again
-            self._swap(index, self._getParentIndex(index))
+            self._swap(self._getParentIndex(index), index)
             index = self._getParentIndex(index)
 
     def heapifyDown(self):
@@ -97,25 +114,25 @@ class MinHeap:
             
             index = smallerChildIndex
 
-
-    # TODO: add method to get heapify the entire heap
-
-
-
-
 def main():
     # TODO: given min heap, turn it into max heap
+    # - To turn in to Max heap, probably would change the comparator in the heapify methods
     heap = MinHeap()
     heap.add(5)
+    print("heap:", str(heap))
     heap.add(28)
+    print("heap:", str(heap))
     heap.add(1)
+    print("heap:", str(heap))
     heap.add(8)
+    print("heap:", str(heap))
     heap.add(2)
+    print("heap:", str(heap))
     heap.add(8)
+    print("heap:", str(heap))
 
     print("peek:", heap.peek())
     print("heap size:", heap.size)
-    print("heap:", str(heap))
 
 
 if __name__ == "__main__":

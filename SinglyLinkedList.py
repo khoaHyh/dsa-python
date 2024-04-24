@@ -25,7 +25,8 @@ class LinkedList:
     
     def __init__(self):
         self.size = 0
-        self.head = Node(-1) # Dummy node to make life easier
+        # Dummy node to make life easier when the LL is empty
+        self.head = Node(-1)
         self.tail = self.head
 
     

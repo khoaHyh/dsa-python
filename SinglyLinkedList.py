@@ -4,7 +4,7 @@ from typing import List, Optional
 """
 Singly Linked List Implementation using a dummy node for simpler implementation
 
-Useful for: retrieving first and last inserted elemenets, quick insertion, quick deletion
+Useful for: retrieving first and last inserted elemenets, quick insertion, quick deletion. Dynamic sizing is nice since we don't have to resize like arrays.
 
 Space: O(n), n is n the number of nodes in the Linked List. Storing value and next pointer in each node.
 
